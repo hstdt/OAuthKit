@@ -13,17 +13,24 @@ import WebKit
 @MainActor
 public class OAWebViewCoordinator: NSObject {
 
-    var webView: OAWebView
+    let webView: OAWebView?
 
     /// The oauth reference.
-    var oauth: OAuth {
-        webView.oauth
-    }
+    let oauth: OAuth
 
     /// Initializer
     /// - Parameter webView: the webview that is being coordinated.
     init(_ webView: OAWebView) {
         self.webView = webView
+        self.oauth = webView.oauth
+        super.init()
+    }
+
+    /// Initializer for testing
+    /// - Parameter oauth: the oauth reference.
+    init(_ oauth: OAuth) {
+        self.webView = nil
+        self.oauth = oauth
         super.init()
     }
 
@@ -78,6 +85,7 @@ public class OAWebViewCoordinator: NSObject {
     /// Handles oauth state changes.
     /// - Parameter state: the published state change.
     func update(state: OAuth.State) {
+        guard let webView else { return }
         switch state {
         case .empty, .authorized, .requestingAccessToken, .requestingDeviceCode:
             break
